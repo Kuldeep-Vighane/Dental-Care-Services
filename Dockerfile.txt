@@ -1,9 +1,13 @@
-FROM nginx:alpine
+# Stage 1: Build the application using Maven
+FROM maven:3.8.6-openjdk-17 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-RUN rm -rf /usr/share/nginx/html/*
-
-COPY . /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Stage 2: Run the application
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080  # Replace with your app's port
+ENTRYPOINT ["java", "-jar", "app.jar"]
