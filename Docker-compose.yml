@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dental_care
+    ports:
+      - "3306:3306"
+
+  dental-care-app:
+    build: .
+    ports:
+      - "8080:8080"
+    container_name: dental-care-container
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dental_care
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
